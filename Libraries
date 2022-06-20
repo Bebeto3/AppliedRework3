@@ -1,0 +1,38 @@
+# Import necessary libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+plt.figure(figsize=(15,15))
+%matplotlib inline
+import seaborn as sns
+#sns.set(rc={'figure.figsize':(11.7,8.27)})
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import silhouette_score
+from sklearn.metrics import adjusted_rand_score, adjusted_mutual_info_score, mutual_info_score, davies_bouldin_score
+import warnings
+warnings.filterwarnings('ignore')
+# Read in the data downloaded from World Bank Data
+df = pd.read_csv('API_19_DS2_en_csv_v2_4151283.csv', skiprows=4)
+df.head()
+# Check for the unique indicators in the dataset
+df['Indicator Name'].unique()
+# Extract CO2 Emission records
+df_co2 = df[df['Indicator Name']=='CO2 emissions (kg per PPP $ of GDP)']
+df_co2.head()
+# Checking the number of rows and columns in the dataset
+df_co2.shape
+# Ectract annual population growth records
+df_pop = df[df['Indicator Name']=='Population growth (annual %)']
+df_pop.head()
+# Read in the dataset containing countries
+nations = pd.read_csv('all_countries.csv')
+nations.head()
+# Rename and select neccessary columns
+nations = nations.rename(columns={'name':'Country Name', 'alpha-3':'Country Code', 'region':'Region', 'sub-region':'Sub-Region'}, inplace=False)
+nations = nations[['Country Name', 'Country Code', 'Region', 'Sub-Region']]
+nations.head()
+# Merge datasets
+merger1 = nations.merge(df_co2, on = ['Country Name', 'Country Code'])
+merger2 = nations.merge(df_pop, on=['Country Name', 'Country Code'])
+merger1.head()
