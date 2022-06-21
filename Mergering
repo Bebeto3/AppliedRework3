@@ -1,0 +1,27 @@
+# Check the dataset
+merger2.head()
+# Check the dataset
+merger2.head()
+# Check the number of rows and columns
+merger2.shape
+# Drop un-needed columns
+merger1 = merger1.drop(['Indicator Code', 'Indicator Name'], axis=1, inplace=False)
+merger2 = merger2.drop(['Indicator Code', 'Indicator Name'], axis=1, inplace=False)
+# Melt (unpivot) the dataframe
+data1 = merger1.melt(id_vars=['Country Name', 'Country Code', 'Region', 'Sub-Region'], var_name='Year', value_name='CO2 emissions (kg per PPP $ of GDP)')
+data1.head()
+# Melt (unpivot) the dataframe
+data2 = merger2.melt(id_vars=['Country Name', 'Country Code', 'Region', 'Sub-Region'], var_name='Year', value_name='Population growth (annual %)')
+data2.head()
+# Merge the dataset
+data_merged = data1.merge(data2, on = ['Country Name', 'Country Code', 'Region', 'Sub-Region', 'Year'])
+data_merged.head()
+# Extract data from year 1990 and above
+data_new = data_merged[data_merged['Year']>='1990']
+data_new.head()
+# Check for the percentage of missing observations in each column
+data_new.isnull().mean()
+# Replacing the missing values with the median value (to avoid adding more noise to the data)
+data_1 = data_new.fillna(data_new['CO2 emissions (kg per PPP $ of GDP)'].median())
+data_1 = data_new.fillna(data_new['Population growth (annual %)'].median())
+data_1.head()
