@@ -1,0 +1,37 @@
+# Check the number of rows and columns
+data_1.shape
+# Create functions to normalize the data
+
+def norm(array):
+    """ Returns array normalised to [0,1]. Array can be a numpy array 
+    or a column of a dataframe"""
+
+    min_val = np.min(array)
+    max_val = np.max(array)
+    
+    scaled = (array-min_val) / (max_val-min_val)
+    
+    return scaled
+
+def norm_df(df):
+    """ 
+    Returns all columns of the dataframe normalised to [0,1] with the 
+    exception the first (containing the names)
+    Calls function norm to do the normalisation of one column, but
+    doing all in one function is also fine. 
+    """
+    
+    # iterate over all columns
+    for col in df.columns[5:]:     # excluding the first column
+        df[col] = norm(df[col])
+        
+    return df
+    
+ # Normalize the data
+data_norm = norm_df(data_1)
+data_norm.head()
+# Group the data by year
+data_year = data_norm.groupby('Year').mean().reset_index()
+data_year.head()
+# Check the number of rows and columns in the datas upon grouping by year
+data_year.shape
