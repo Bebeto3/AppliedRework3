@@ -1,0 +1,109 @@
+data_year['Year'] = data_year['Year'].astype(float)
+data_year.head()
+co2 = data_year['CO2 emissions (kg per PPP $ of GDP)']
+pop = data_year['Population growth (annual %)']
+year= data_year['Year']
+# Fit exponential curve for CO2 emission
+from scipy.optimize import curve_fit
+
+def exp_fit(x, a, b, c):
+    y = a * np.exp(-b * x) + c
+    return y
+fit = curve_fit(exp_fit, year, co2, p0=[0.005, 0.03, 5])
+fit_eq = fit[0][0]*np.exp(fit[0][1]*year+fit[0][2])
+# Plot the curve
+
+fig = plt.figure()
+ax = fig.subplots()
+ax.scatter(year, co2, color='r', s=5)
+ax.plot(year, fit_eq, color='b', alpha=0.7)
+ax.set_ylabel('CO2 Emission')
+ax.set_xlabel('Year')
+
+plt.title('Exponential Curve of CO2 Emission')
+plt.show()
+
+fig.savefig('Exponential Curve of CO2 Emission')
+# Fit exponential curve for population growth
+
+from scipy.optimize import curve_fit
+
+def exp_fit(x, a, b, c):
+    y = a * np.exp(-b * x) + c
+    return y
+
+fit = curve_fit(exp_fit, year, pop, p0=[0.005, 0.03, 5])
+fit_eq = fit[0][0]*np.exp(fit[0][1]*year+fit[0][2])
+fig = plt.figure()
+ax = fig.subplots()
+ax.scatter(year, pop, color='r', s=5)
+ax.plot(year, fit_eq, color='b', alpha=0.7)
+ax.set_ylabel('Annual Growth in Population')
+ax.set_xlabel('Year')
+
+plt.title('Exponential Curve of Annual Population Growth')
+plt.show()
+
+fig.savefig('Exponential Curve of Annual Population Growth.png')
+# Group the data by Country
+
+data_country = data_norm.groupby(['Country Name', 'Region']).mean().reset_index()
+data_country.head()
+# Check the data
+
+data_country.head()
+# Extract the data for clustering
+
+x = data_country.iloc[:, 2:]
+x.head()
+# Using the elbow approach, find the optimized number of clusters in the available dataset
+
+wcss = [] 
+for i in range(1, 10): 
+    kmeans = KMeans(n_clusters = i, init = 'k-means++', random_state = 42)
+    kmeans.fit(x) 
+    wcss.append(kmeans.inertia_)
+    
+  # Plot the elbow chart
+fig, ax = plt.subplots()
+plt.plot(range(1, 10), wcss)
+plt.xlabel('Number of clusters')
+plt.ylabel('WCSS')
+plt.title('WCSS Chart for Clusters')
+plt.show()
+
+fig.savefig('WCSS Chart for Clusters.png')
+####### kmeans set up the clusterer, 4 expected clusters
+kmeans = KMeans(n_clusters=4)
+
+# extract columns for fitting
+df_fit = data_country[["CO2 emissions (kg per PPP $ of GDP)", "Population growth (annual %)",]].copy()
+kmeans.fit(df_fit)     
+
+# extract labels and cluster centres
+labels = kmeans.labels_
+cen = kmeans.cluster_centers_
+
+# plot using the labels to select colour
+plt.figure(figsize=(5.0,5.0))
+
+col = ["blue", "red", "green", "magenta"]
+for l in range(4):     # loop over the different labels
+    plt.plot(df_fit["CO2 emissions (kg per PPP $ of GDP)"][labels==l], df_fit["Population growth (annual %)"][labels==l], "o", markersize=3, color=col[l])
+    
+# show cluster centres
+for ic in range(4):
+    xc, yc = cen[ic,:]
+    plt.plot(xc, yc, "dk", markersize=10)
+    
+plt.xlabel("CO2 emissions (kg per PPP $ of GDP)")
+plt.ylabel("Population growth (annual %)")
+plt.show()
+# Create a column for the matching clusters
+
+df_fit['Cluster']= labels
+df_fit.head()
+# Merge the clustered data with the original data
+
+final_data = data_country.merge(df_fit, on=['CO2 emissions (kg per PPP $ of GDP)','Population growth (annual %)',])
+final_data.head()
