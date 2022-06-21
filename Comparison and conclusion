@@ -1,0 +1,57 @@
+final_data = final_data[['Country Name', 'Region', 'CO2 emissions (kg per PPP $ of GDP)', 'Population growth (annual %)', 'Cluster']]
+final_data.head()
+fig, ax = plt.subplots()
+
+sns.countplot(final_data['Cluster'])
+plt.ylabel('Number of Countries')
+plt.xlabel('Cluster')
+plt.show()
+
+fig.savefig('Cluster Count Plot.png')
+final_data.Cluster.value_counts()
+# Correlation
+
+corr = df_fit.drop('Cluster', axis=1).corr()
+corr
+c_1 = final_data[final_data['Cluster']==0]
+c_1.head()
+c_1.Region.value_counts()
+c_1.describe()
+corr = c_1.drop('Cluster', axis=1).corr()
+corr
+c_2 = final_data[final_data['Cluster']==1]
+c_2.head()
+c_2.Region.value_counts()
+c_2.describe()
+corr = c_2.drop('Cluster', axis=1).corr()
+corr
+c_3 = final_data[final_data['Cluster']==2]
+c_3.head()
+c_3.Region.value_counts()
+c_3.describe()
+corr = c_3.drop('Cluster', axis=1).corr()
+corr
+c_4 = final_data[final_data['Cluster']==3]
+c_4.head()
+c_4.Region.value_counts()
+c_4.describe()
+corr = c_4.drop('Cluster', axis=1).corr()
+corr
+# Create a dataframe containing only the first country in each cluster
+
+df_comparison = data_1[(data_1['Country Name']=='Angola') | (data_1['Country Name']=='American Samoa') | (data_1['Country Name']=='Afghanistan') | (data_1['Country Name']=='Albania')]
+df_comparison.head()
+df_comparison.Region.nunique()
+df_comparison.Region.value_counts()
+# Line Plot of CO2 Emission
+
+sns.set_style('ticks')
+fig, ax = plt.subplots()
+# the size of A4 paper
+fig.set_size_inches(20.00, 8.00)
+
+sns.lineplot(x='Year', y='CO2 emissions (kg per PPP $ of GDP)', hue='Country Name', data=df_comparison)
+plt.title('Line plot of CO2 Emission')
+sns.despine
+
+fig.savefig('Line plot of CO2 Emission.png')
